@@ -15,7 +15,8 @@ connectDB();
 // CORS Middleware
 app.use(
   cors({
-    origin: ['http://localhost:5173', 'http://localhost:3000'], // Allow multiple origins
+    origin: ['http://localhost:5173', 'http://localhost:3000',
+      "https://preeminent-kleicha-b50e93.netlify.app" ], // Allow multiple origins
     credentials: true, // If you're using cookies or HTTP authentication
   })
 );
