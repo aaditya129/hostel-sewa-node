@@ -16,7 +16,7 @@ connectDB();
 app.use(
   cors({
     origin: ['http://localhost:5173', 'http://localhost:3000',
-      "https://hostelsewa.netlify.app/" ], // Allow multiple origins
+      'https://hostelsewa.netlify.app/' ], // Allow multiple origins
     credentials: true, // If you're using cookies or HTTP authentication
   })
 );
