@@ -4,6 +4,8 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('./config/cloudinary');
 
 dotenv.config();
 
@@ -26,12 +28,11 @@ app.use(express.json({ extended: false }));
 app.use(express.urlencoded({ extended: true }));
 
 // Multer Configuration
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/'); // Directory for uploaded files
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`); // Unique file names
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'uploads', // Optional: your folder in Cloudinary
+    allowed_formats: ['jpg', 'jpeg', 'png'],
   },
 });
 const upload = multer({ storage });
@@ -64,12 +65,16 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
     if (!file) {
       return res.status(400).json({ msg: 'No file uploaded' });
     }
-    res.status(200).json({ msg: 'File uploaded successfully', file });
+    res.status(200).json({ 
+      msg: 'File uploaded successfully', 
+      url: file.path  // ✅ Cloudinary URL
+    });
   } catch (err) {
     console.error('Error during file upload:', err.message);
     res.status(500).json({ msg: 'Server error' });
   }
 });
+
 
 // Server Setup
 const PORT = process.env.PORT || 5000;

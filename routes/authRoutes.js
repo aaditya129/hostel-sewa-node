@@ -1,35 +1,30 @@
 const express = require('express');
-const fs = require('fs');
-const path = require('path');
 const multer = require('multer');
-const { 
-  register, 
-  login, 
-  registerOwner, 
-  loginOwner, 
-  getUserDetails, 
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('../config/cloudinary');
+
+const {
+  register,
+  login,
+  registerOwner,
+  loginOwner,
+  getUserDetails,
   getAllHostelOwners,
   verifyEmail,
-  getAllUsers  // Add this function in the controller
+  getAllUsers
 } = require('../controllers/authController');
 
 const router = express.Router();
 
-// Check if uploads directory exists, create if not
-const uploadDir = path.join(__dirname, '../uploads');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir);
-}
-
-// Multer configuration for profile pictures
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDir); // Use validated directory
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
+// Cloudinary storage setup
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'profile-pictures',
+    allowed_formats: ['jpg', 'jpeg', 'png'],
   },
 });
+
 const upload = multer({ storage });
 
 // Define routes
@@ -37,11 +32,9 @@ router.post('/register', upload.single('profilePicture'), register);
 router.post('/registerOwner', registerOwner);
 router.post('/login', login);
 router.post('/loginOwner', loginOwner);
-router.get('/userdetails/:id', getUserDetails); // Pass user ID as a route parameter
-router.get("/owners", getAllHostelOwners);
-router.get('/users', getAllUsers); 
-
-// New Route for email verification
-router.post('/verify-email', verifyEmail); // User enters verification code
+router.get('/userdetails/:id', getUserDetails);
+router.get('/owners', getAllHostelOwners);
+router.get('/users', getAllUsers);
+router.post('/verify-email', verifyEmail);
 
 module.exports = router;
