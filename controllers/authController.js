@@ -208,8 +208,6 @@ exports.registerOwner = async (req, res) => {
     contactNumber,
     faxNumber,
     email,
-    password, // Added password
-    website,
     hostelType,
     ownerDetail,
     ownerContactNumber,
@@ -218,9 +216,6 @@ exports.registerOwner = async (req, res) => {
     locationName,
     minimumRate,
     maximumRate,
-    hostelLogo,
-    hostelPanPhoto,
-    hostelRegistrationPhoto,
     description,
     hostelOverview,
   } = req.body;
@@ -229,7 +224,7 @@ exports.registerOwner = async (req, res) => {
     // Check if the owner already exists
     let owner = await HostelOwner.findOne({ email });
     if (owner) {
-      return res.status(400).json({ msg: 'Owner already exists' });
+      return res.status(400).json({ msg: "Owner already exists" });
     }
 
     // Create a new owner instance
@@ -242,8 +237,6 @@ exports.registerOwner = async (req, res) => {
       contactNumber,
       faxNumber,
       email,
-      password, // Save the hashed password
-      website,
       hostelType,
       ownerDetail,
       ownerContactNumber,
@@ -252,35 +245,33 @@ exports.registerOwner = async (req, res) => {
       locationName,
       minimumRate,
       maximumRate,
-      hostelLogo,
-      hostelPanPhoto,
-      hostelRegistrationPhoto,
+      hostelLogo: req.files?.hostelLogo?.[0]?.path || null,
+      hostelPanPhoto: req.files?.hostelPanPhoto?.[0]?.path || null,
+      hostelRegistrationPhoto: req.files?.hostelRegistrationPhoto?.[0]?.path || null,
       description,
       hostelOverview,
     });
 
-    // Hash the password before saving
+    // Default password (from schema) or set manually here
     const salt = await bcrypt.genSalt(10);
-    owner.password = await bcrypt.hash(password, salt);
+    owner.password = await bcrypt.hash("12345", salt);
 
-    // Save the owner to the database
     await owner.save();
 
-    // Create a payload for JWT
+    // Generate token
     const payload = {
       owner: {
         id: owner.id,
       },
     };
 
-    // Generate and return a JWT token
-    jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: 360000 }, (err, token) => {
+    jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" }, (err, token) => {
       if (err) throw err;
-      res.json({ token });
+      res.json({ token, owner });
     });
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server error');
+    console.error("Register Owner Error:", err.message);
+    res.status(500).send("Server error");
   }
 };
 
@@ -347,6 +338,25 @@ exports.getAllHostelOwners = async (req, res) => {
     res.status(200).json({ owners });
   } catch (err) {
     console.error("Error fetching owners:", err.message);
+    res.status(500).json({ msg: "Server error" });
+  }
+};
+
+exports.approveHostelOwner = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const owner = await HostelOwner.findById(id);
+    if (!owner) {
+      return res.status(404).json({ msg: "Hostel owner not found" });
+    }
+
+    owner.approved = true;
+    await owner.save();
+
+    res.status(200).json({ msg: "Hostel owner approved successfully", owner });
+  } catch (err) {
+    console.error("Approve error:", err.message);
     res.status(500).json({ msg: "Server error" });
   }
 };

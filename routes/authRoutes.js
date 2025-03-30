@@ -11,7 +11,8 @@ const {
   getUserDetails,
   getAllHostelOwners,
   verifyEmail,
-  getAllUsers
+  getAllUsers,
+  approveHostelOwner
 } = require('../controllers/authController');
 
 const router = express.Router();
@@ -29,12 +30,21 @@ const upload = multer({ storage });
 
 // Define routes
 router.post('/register', upload.single('profilePicture'), register);
-router.post('/registerOwner', registerOwner);
+router.post(
+  '/registerOwner',
+  upload.fields([
+    { name: 'hostelLogo', maxCount: 1 },
+    { name: 'hostelPanPhoto', maxCount: 1 },
+    { name: 'hostelRegistrationPhoto', maxCount: 1 },
+  ]),
+  registerOwner
+);
 router.post('/login', login);
 router.post('/loginOwner', loginOwner);
 router.get('/userdetails/:id', getUserDetails);
 router.get('/owners', getAllHostelOwners);
 router.get('/users', getAllUsers);
 router.post('/verify-email', verifyEmail);
+router.put("/owners/:id/approve", approveHostelOwner);
 
 module.exports = router;
