@@ -7,7 +7,8 @@ const {
   uploadQrImages,
   getQrImages,
   getBankQr,
-  getEsewaQr
+  getEsewaQr,
+  updateQrImages
 } = require("../controllers/qrController");
 
 // Cloudinary storage
