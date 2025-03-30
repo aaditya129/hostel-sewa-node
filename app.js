@@ -23,6 +23,8 @@ app.use(
   })
 );
 
+app.options('*', cors());
+
 // Init Middleware
 app.use(express.json({ extended: false }));
 app.use(express.urlencoded({ extended: true }));
