@@ -6,7 +6,7 @@ const HostelPhoto = require("../models/HostelPhoto");
 exports.uploadCoverPhoto = async (req, res) => {
     try {
         const { hostelId } = req.params;
-        const imageUrl = `/uploads/${req.file.filename}`;
+        const imageUrl = req.file?.path; // ✅ Cloudinary URL
 
         let hostelPhoto = await HostelPhoto.findOne({ hostelId });
 
@@ -23,6 +23,9 @@ exports.uploadCoverPhoto = async (req, res) => {
     }
 };
 
+/**
+ * Get all photos for a hostel
+ */
 exports.getHostelPhotos = async (req, res) => {
     try {
         const { hostelId } = req.params;
@@ -42,13 +45,14 @@ exports.getHostelPhotos = async (req, res) => {
         res.status(500).json({ error: "Server error while fetching photos." });
     }
 };
+
 /**
  * Upload multiple hostel photos
  */
 exports.uploadPhotos = async (req, res) => {
     try {
         const { hostelId } = req.params;
-        const imageUrls = req.files.map(file => `/uploads/${file.filename}`);
+        const imageUrls = req.files.map(file => file.path); // ✅ Cloudinary URLs
 
         let hostelPhoto = await HostelPhoto.findOne({ hostelId });
 
@@ -90,7 +94,7 @@ exports.deleteCoverPhoto = async (req, res) => {
 exports.deletePhoto = async (req, res) => {
     try {
         const { hostelId } = req.params;
-        const { imageUrl } = req.body; // Pass imageUrl in request body
+        const { imageUrl } = req.body; // Cloudinary URL in request body
 
         let hostelPhoto = await HostelPhoto.findOne({ hostelId });
 

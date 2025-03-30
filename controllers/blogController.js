@@ -6,7 +6,7 @@ const Blog = require("../models/Blog");
 exports.createBlog = async (req, res) => {
     try {
         const { title, heading, author, content } = req.body;
-        const image = req.file ? `/uploads/${req.file.filename}` : null;
+        const image = req.file?.path; // ✅ Cloudinary URL
 
         if (!title || !heading || !author || !content || !image) {
             return res.status(400).json({ message: "All fields are required" });
@@ -14,6 +14,7 @@ exports.createBlog = async (req, res) => {
 
         const newBlog = new Blog({ title, heading, image, author, content });
         await newBlog.save();
+
         res.status(201).json({ message: "Blog created successfully", blog: newBlog });
     } catch (error) {
         res.status(500).json({ message: "Error creating blog", error: error.message });
@@ -57,7 +58,7 @@ exports.updateBlog = async (req, res) => {
     try {
         const { id } = req.params;
         const { title, heading, author, content } = req.body;
-        const image = req.file ? `/uploads/${req.file.filename}` : undefined;
+        const image = req.file?.path; // ✅ Cloudinary URL
 
         const updatedData = { title, heading, author, content };
         if (image) updatedData.image = image;

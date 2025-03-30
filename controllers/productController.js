@@ -6,7 +6,8 @@ const Product = require('../models/Product');
 // @access  Public (or Private if only admins can add products)
 const addProduct = async (req, res) => {
     try {
-        const { name, photo, price, rating, details, features, category } = req.body;
+        const { name, price, rating, details, features, category } = req.body;
+        const photo = req.file?.path; // ✅ Cloudinary-hosted image URL
 
         const newProduct = new Product({
             name,
@@ -32,6 +33,7 @@ const addProduct = async (req, res) => {
         });
     }
 };
+
 
 // @desc    Get all products
 // @route   GET /api/products

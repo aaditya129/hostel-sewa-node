@@ -1,27 +1,31 @@
 const express = require("express");
 const multer = require("multer");
-const { 
-    createBlog, 
-    getAllBlogs, 
-    getBlogById, 
-    updateBlog, 
-    deleteBlog 
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const cloudinary = require("../config/cloudinary");
+
+const {
+  createBlog,
+  getAllBlogs,
+  getBlogById,
+  updateBlog,
+  deleteBlog
 } = require("../controllers/blogController");
 
 const router = express.Router();
 
-// Multer Configuration for Image Upload
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, "uploads/"); // Store files in 'uploads' folder
-    },
-    filename: (req, file, cb) => {
-        cb(null, `${Date.now()}-${file.originalname}`);
-    }
+// ✅ Cloudinary storage setup
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "blogs",
+    allowed_formats: ["jpg", "jpeg", "png"],
+    public_id: (req, file) => `${Date.now()}-${file.originalname.split('.')[0]}`,
+  },
 });
+
 const upload = multer({ storage });
 
-// Routes
+// ✅ Routes
 router.post("/", upload.single("image"), createBlog);
 router.get("/", getAllBlogs);
 router.get("/:id", getBlogById);
