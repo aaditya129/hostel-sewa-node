@@ -8,6 +8,7 @@ const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const cloudinary = require('./config/cloudinary');
 const qrRoutes = require("./routes/qrRoutes");
 const introArrayRoutes = require('./routes/introArrayRoutes.js');
+const adImageRoutes = require("./routes/adImageRoutes");
 
 dotenv.config();
 
@@ -63,6 +64,7 @@ app.use('/api/contacts', contactRoutes);
 app.use('/api/certificates', certificateRoutes);
 app.use("/api/qr", qrRoutes);
 app.use('/api/intro-array', introArrayRoutes);
+app.use("/api", adImageRoutes);
 
 
 // Example Endpoint with Multer for Testing
