@@ -10,6 +10,7 @@ const qrRoutes = require("./routes/qrRoutes");
 const introArrayRoutes = require('./routes/introArrayRoutes.js');
 const adImageRoutes = require("./routes/adImageRoutes");
 const serviceRoutes = require('./routes/serviceRoutes');
+const commitmentRoutes = require('./routes/commitmentRoutes');
 
 dotenv.config();
 
@@ -67,6 +68,7 @@ app.use("/api/qr", qrRoutes);
 app.use('/api/intro-array', introArrayRoutes);
 app.use("/api", adImageRoutes);
 app.use('/api/services', serviceRoutes);
+app.use('/api/commitments', commitmentRoutes);
 
 
 // Example Endpoint with Multer for Testing
