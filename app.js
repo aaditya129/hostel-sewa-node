@@ -14,6 +14,7 @@ const commitmentRoutes = require('./routes/commitmentRoutes');
 const missionRoutes = require('./routes/missionRoutes');
 const partnerRoutes = require('./routes/partnerRoutes');
 const contactInfoRoutes = require('./routes/contactInfoRoutes');
+const eventGalleryRoutes = require('./routes/eventGalleryRoutes');
 
 dotenv.config();
 
@@ -75,6 +76,7 @@ app.use('/api/commitments', commitmentRoutes);
 app.use('/api/missions', missionRoutes);
 app.use('/api/partners', partnerRoutes);
 app.use('/api/contact-info', contactInfoRoutes);
+app.use('/api/event-gallery', eventGalleryRoutes);
 
 
 // Example Endpoint with Multer for Testing
