@@ -11,6 +11,7 @@ const introArrayRoutes = require('./routes/introArrayRoutes.js');
 const adImageRoutes = require("./routes/adImageRoutes");
 const serviceRoutes = require('./routes/serviceRoutes');
 const commitmentRoutes = require('./routes/commitmentRoutes');
+const missionRoutes = require('./routes/missionRoutes');
 
 dotenv.config();
 
@@ -69,6 +70,7 @@ app.use('/api/intro-array', introArrayRoutes);
 app.use("/api", adImageRoutes);
 app.use('/api/services', serviceRoutes);
 app.use('/api/commitments', commitmentRoutes);
+app.use('/api/missions', missionRoutes);
 
 
 // Example Endpoint with Multer for Testing
