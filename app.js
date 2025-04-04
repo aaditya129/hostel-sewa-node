@@ -12,6 +12,7 @@ const adImageRoutes = require("./routes/adImageRoutes");
 const serviceRoutes = require('./routes/serviceRoutes');
 const commitmentRoutes = require('./routes/commitmentRoutes');
 const missionRoutes = require('./routes/missionRoutes');
+const partnerRoutes = require('./routes/partnerRoutes');
 
 dotenv.config();
 
@@ -71,6 +72,7 @@ app.use("/api", adImageRoutes);
 app.use('/api/services', serviceRoutes);
 app.use('/api/commitments', commitmentRoutes);
 app.use('/api/missions', missionRoutes);
+app.use('/api/partners', partnerRoutes);
 
 
 // Example Endpoint with Multer for Testing
