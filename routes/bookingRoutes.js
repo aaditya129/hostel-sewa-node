@@ -29,10 +29,10 @@ const upload = multer({ storage });
 
 // ✅ Routes
 router.post("/", auth, upload.single("paymentScreenshot"), createBooking);
-router.put("/confirm", auth, confirmBooking);
-router.put("/cancel/:id", auth, cancelBooking);
+router.put("/confirm",  confirmBooking);
+router.put("/cancel/:id",  cancelBooking);
 router.get("/", getAllBookings);
-router.delete("/:id", auth, deleteBooking);
+router.delete("/:id",  deleteBooking);
 router.get("/user/:userId", getBookingsByUser);
 
 module.exports = router;
