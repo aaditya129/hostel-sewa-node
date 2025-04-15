@@ -57,6 +57,24 @@ const editHostel = async (req, res) => {
   }
 };
 
+// ✅ Delete a hostel
+const deleteHostel = async (req, res) => {
+  try {
+    const { hostelId } = req.params;
+
+    const deletedHostel = await Hostel.findByIdAndDelete(hostelId);
+
+    if (!deletedHostel) {
+      return res.status(404).json({ message: "Hostel not found" });
+    }
+
+    res.status(200).json({ message: "Hostel deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+
 // ✅ Get all hostels (for Admins)
 const getAllHostels = async (req, res) => {
   try {
@@ -136,4 +154,5 @@ module.exports = {
   getAssignedHostels,
   assignHostelToOwner,
   editHostel,
+  deleteHostel
 };
