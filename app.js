@@ -15,6 +15,7 @@ const missionRoutes = require('./routes/missionRoutes');
 const partnerRoutes = require('./routes/partnerRoutes');
 const contactInfoRoutes = require('./routes/contactInfoRoutes');
 const eventGalleryRoutes = require('./routes/eventGalleryRoutes');
+const paymentRoutes =  require('./routes/paymentRoutes.js');
 
 dotenv.config();
 
@@ -77,6 +78,8 @@ app.use('/api/missions', missionRoutes);
 app.use('/api/partners', partnerRoutes);
 app.use('/api/contact-info', contactInfoRoutes);
 app.use('/api/event-gallery', eventGalleryRoutes);
+app.use('/api/payments', paymentRoutes);
+
 
 
 // Example Endpoint with Multer for Testing
