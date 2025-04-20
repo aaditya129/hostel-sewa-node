@@ -49,6 +49,7 @@ router.get('/users', getAllUsers);
 router.post('/verify-email', verifyEmail);
 router.put("/owners/:id/approve", approveHostelOwner);
 router.put('/changepassword/:id', changePassword);
-router.put('/update/:id', updateUser);
+router.put('/update/:id', upload.single('profilePicture'), updateUser);
+
 
 module.exports = router;

@@ -190,25 +190,31 @@ exports.changePassword = async (req, res) => {
 
 
 exports.updateUser = async (req, res) => {
-  const { id } = req.params;
-
   try {
-    const updatedFields = req.body;
+    const { id } = req.params;
+    let updatedFields = req.body;
 
-    const user = await User.findByIdAndUpdate(
-      id,
-      { $set: updatedFields },
-      { new: true, runValidators: true }
-    ).select('-password'); // Never return password
+    // Handle uploaded profile picture from Cloudinary
+    if (req.file && req.file.path) {
+      updatedFields.profilePicture = req.file.path;
+    }
 
-    if (!user) return res.status(404).json({ msg: "User not found" });
+    const updatedUser = await User.findByIdAndUpdate(id, updatedFields, {
+      new: true,
+      runValidators: true,
+    }).select('-password'); // Exclude password from response
 
-    res.status(200).json({ msg: "User updated successfully", user });
+    if (!updatedUser) {
+      return res.status(404).json({ msg: 'User not found' });
+    }
+
+    res.status(200).json({ msg: 'User updated successfully', user: updatedUser });
   } catch (err) {
-    console.error("Update User Error:", err.message);
-    res.status(500).json({ msg: "Server error" });
+    console.error('Update User Error:', err.message);
+    res.status(500).json({ msg: 'Server error' });
   }
 };
+
 
 exports.login = async (req, res) => {
   const { email, password } = req.body;
