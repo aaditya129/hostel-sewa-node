@@ -12,7 +12,9 @@ const {
   getAllHostelOwners,
   verifyEmail,
   getAllUsers,
-  approveHostelOwner
+  approveHostelOwner,
+  changePassword,
+  updateUser
 } = require('../controllers/authController');
 
 const router = express.Router();
@@ -46,5 +48,7 @@ router.get('/owners', getAllHostelOwners);
 router.get('/users', getAllUsers);
 router.post('/verify-email', verifyEmail);
 router.put("/owners/:id/approve", approveHostelOwner);
+router.put('/changepassword/:id', changePassword);
+router.put('/update/:id', updateUser);
 
 module.exports = router;

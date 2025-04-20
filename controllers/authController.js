@@ -166,6 +166,49 @@ exports.getAllUsers = async (req, res) => {
   }
 };
 
+exports.changePassword = async (req, res) => {
+  try {
+    const { oldPassword, newPassword } = req.body;
+    const userId = req.params.id;
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ msg: "User not found" });
+
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch) return res.status(400).json({ msg: "Old password is incorrect" });
+
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPassword, salt);
+    await user.save();
+
+    res.json({ msg: "Password changed successfully" });
+  } catch (err) {
+    console.error("Change password error:", err.message);
+    res.status(500).json({ msg: "Server error" });
+  }
+};
+
+
+exports.updateUser = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const updatedFields = req.body;
+
+    const user = await User.findByIdAndUpdate(
+      id,
+      { $set: updatedFields },
+      { new: true, runValidators: true }
+    ).select('-password'); // Never return password
+
+    if (!user) return res.status(404).json({ msg: "User not found" });
+
+    res.status(200).json({ msg: "User updated successfully", user });
+  } catch (err) {
+    console.error("Update User Error:", err.message);
+    res.status(500).json({ msg: "Server error" });
+  }
+};
 
 exports.login = async (req, res) => {
   const { email, password } = req.body;
