@@ -1,4 +1,27 @@
 const AvailableBeds = require("../models/AvailableBeds");
+const Hostel = require("../models/Hostel"); 
+
+const getHostelsByRoomType = async (req, res) => {
+  try {
+    const { roomType } = req.body; // 🔄 from body now
+
+    if (!roomType) {
+      return res.status(400).json({ success: false, message: "roomType is required in body" });
+    }
+
+    const beds = await AvailableBeds.find({
+      roomType,
+      bedsAvailable: { $gt: 0 }
+    }).populate("hostelId");
+
+    const hostels = beds.map(bed => bed.hostelId);
+
+    res.status(200).json({ success: true, count: hostels.length, data: hostels });
+  } catch (error) {
+    console.error("Error fetching hostels by room type:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
 
 // ✅ Add Available Beds
 const addAvailableBeds = async (req, res) => {
@@ -100,4 +123,5 @@ module.exports = {
   getAvailableBedsByHostel,
   updateAvailableBeds,
   deleteAvailableBeds,
+  getHostelsByRoomType
 };
