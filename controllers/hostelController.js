@@ -4,19 +4,20 @@ const HostelOwner = require("../models/owneruser");
 const registerHostel = async (req, res) => {
   try {
     const {
-      name, contact, address, district, province, area, mapUrl, price, totalRooms, bathrooms,
-      floors, beds, students, overview, features, type,
+      name, contact, address, district, province, area, mapUrl, price,
+      totalRooms, bathrooms, floors, beds, students,
+      overview, features, type, youtubeUrl, vip
     } = req.body;
 
-    // Validate hostel type
     const allowedTypes = ["Boys", "Girls", "Co-ed"];
     if (!allowedTypes.includes(type)) {
       return res.status(400).json({ message: "Invalid hostel type" });
     }
 
     const newHostel = new Hostel({
-      name, contact, address, district, province, area, mapUrl, price, totalRooms, bathrooms,
-      floors, beds, students, overview, features, type,
+      name, contact, address, district, province, area, mapUrl, price,
+      totalRooms, bathrooms, floors, beds, students,
+      overview, features, type, youtubeUrl, vip
     });
 
     const savedHostel = await newHostel.save();
@@ -26,13 +27,13 @@ const registerHostel = async (req, res) => {
   }
 };
 
+
 // ✅ Edit hostel details (including new fields)
 const editHostel = async (req, res) => {
   try {
     const { hostelId } = req.params;
     const updateData = req.body;
 
-    // Validate hostel type if provided
     if (updateData.type) {
       const allowedTypes = ["Boys", "Girls", "Co-ed"];
       if (!allowedTypes.includes(updateData.type)) {
@@ -40,11 +41,11 @@ const editHostel = async (req, res) => {
       }
     }
 
-    // 🔹 Find and update hostel
-    const updatedHostel = await Hostel.findByIdAndUpdate(hostelId, updateData, {
-      new: true,
-      runValidators: true,
-    });
+    const updatedHostel = await Hostel.findByIdAndUpdate(
+      hostelId,
+      updateData,
+      { new: true, runValidators: true }
+    );
 
     if (!updatedHostel) {
       return res.status(404).json({ message: "Hostel not found" });
@@ -56,6 +57,7 @@ const editHostel = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
 
 // ✅ Delete a hostel
 const deleteHostel = async (req, res) => {

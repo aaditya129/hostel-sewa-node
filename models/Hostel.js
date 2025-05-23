@@ -32,7 +32,6 @@ const hostelSchema = new mongoose.Schema(
     },
     area: {
       type: String,
-      required: [true, "Area is required"],
       trim: true,
     },
     mapUrl: {
@@ -45,6 +44,15 @@ const hostelSchema = new mongoose.Schema(
         message: "Invalid Google Maps URL",
       },
     },
+    youtubeUrl: {
+      type: String,
+      validate: {
+        validator: function (url) {
+          return !url || /^https:\/\/(www\.)?youtube\.com\/embed\/[A-Za-z0-9_-]+/.test(url);
+        },
+        message: "Invalid YouTube embed URL",
+      },
+    },
     price: {
       type: Number,
       required: [true, "Price is required"],
@@ -52,28 +60,23 @@ const hostelSchema = new mongoose.Schema(
     },
     totalRooms: {
       type: Number,
-      required: [true, "Total rooms are required"],
-      min: [1, "There must be at least one room"],
+      min: [0, "Rooms cannot be negative"],
     },
     bathrooms: {
       type: Number,
-      required: [true, "Number of bathrooms is required"],
-      min: [1, "There must be at least one bathroom"],
+      min: [0, "Bathrooms cannot be negative"],
     },
     floors: {
       type: Number,
-      required: [true, "Number of floors is required"],
-      min: [1, "There must be at least one floor"],
+      min: [0, "Floors cannot be negative"],
     },
     beds: {
       type: Number,
-      required: [true, "Number of beds is required"],
-      min: [1, "There must be at least one bed"],
+      min: [0, "Beds cannot be negative"],
     },
     students: {
       type: Number,
-      required: [true, "Number of students is required"],
-      min: [1, "There must be at least one student"],
+      min: [0, "Students cannot be negative"],
     },
     overview: {
       type: String,
@@ -88,23 +91,23 @@ const hostelSchema = new mongoose.Schema(
       },
       default: [],
     },
-    // ✅ Assign Hostel to an Owner
     owner: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "HostelOwner", // References the owner
-      default: null, // Initially, no owner is assigned
+      ref: "HostelOwner",
+      default: null,
     },
-    // ✅ Add Hostel Type
     type: {
       type: String,
       required: [true, "Hostel type is required"],
-      enum: ["Boys", "Girls", "Co-ed"], // Restrict to these types
+      enum: ["Boys", "Girls", "Co-ed"],
       trim: true,
     },
+    vip: {
+      type: Boolean,
+      default: false,
+    },
   },
-  {
-    timestamps: true, // Automatically adds `createdAt` and `updatedAt` fields
-  }
+  { timestamps: true }
 );
 
 module.exports = mongoose.model("Hostel", hostelSchema);
