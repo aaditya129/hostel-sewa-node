@@ -3,45 +3,93 @@ const cloudinary = require('../config/cloudinary');
 
 const uploadAdImage = async (req, res) => {
   try {
-    const file = req.file;
-    if (!file) return res.status(400).json({ msg: "Image file is required" });
-
-    let ad = await AdImage.findOne();
-
-    // If image already exists, delete old one from Cloudinary
-    if (ad && ad.publicId) {
-      await cloudinary.uploader.destroy(ad.publicId);
+    const files = req.files;
+    if (!files || files.length === 0) {
+      return res.status(400).json({ msg: "Image files are required" });
     }
 
-    // Save new one
-    const newAd = {
-      imageUrl: file.path,
-      publicId: file.filename, // Cloudinary gives this as filename
-    };
+    const images = [];
+    const gifs = [];
 
-    if (ad) {
-      ad.imageUrl = newAd.imageUrl;
-      ad.publicId = newAd.publicId;
-      await ad.save();
-    } else {
-      ad = await AdImage.create(newAd);
+    for (const file of files) {
+      const isGif = file.mimetype === 'image/gif';
+      const item = {
+        imageUrl: file.path,
+        publicId: file.filename
+      };
+
+      if (isGif) {
+        if (gifs.length < 3) gifs.push(item);
+      } else {
+        if (images.length < 3) images.push(item);
+      }
     }
 
-    res.status(200).json({ msg: "Ad image updated", adImage: ad });
+    if (images.length === 0 && gifs.length === 0) {
+      return res.status(400).json({ msg: "No valid images or gifs uploaded (max 3 each)" });
+    }
+
+    const ad = await AdImage.create({ images, gifs });
+
+    res.status(200).json({ msg: "Ad image group uploaded", adImage: ad });
   } catch (error) {
-    console.error("Ad image update error:", error);
+    console.error("Ad image upload error:", error);
     res.status(500).json({ msg: "Server error", error: error.message });
   }
 };
 
-const getAdImage = async (req, res) => {
+
+const getImageAds = async (req, res) => {
   try {
-    const ad = await AdImage.findOne();
-    if (!ad) return res.status(404).json({ msg: "No ad image found" });
-    res.status(200).json(ad);
+    const ads = await AdImage.find().sort({ createdAt: -1 });
+    const imageOnly = ads.flatMap(ad => ad.images || []);
+    res.status(200).json(imageOnly);
   } catch (error) {
     res.status(500).json({ msg: "Server error", error: error.message });
   }
 };
 
-module.exports = { uploadAdImage, getAdImage };
+const getGifAds = async (req, res) => {
+  try {
+    const ads = await AdImage.find().sort({ createdAt: -1 });
+    const gifOnly = ads.flatMap(ad => ad.gifs || []);
+    res.status(200).json(gifOnly);
+  } catch (error) {
+    res.status(500).json({ msg: "Server error", error: error.message });
+  }
+};
+const deleteAdItem = async (req, res) => {
+  const { publicId } = req.params;
+
+  try {
+    // Delete from Cloudinary
+    await cloudinary.uploader.destroy(publicId);
+
+    // Remove from both arrays in all ads
+    const ad = await AdImage.findOneAndUpdate(
+      {
+        $or: [
+          { "images.publicId": publicId },
+          { "gifs.publicId": publicId }
+        ]
+      },
+      {
+        $pull: {
+          images: { publicId },
+          gifs: { publicId }
+        }
+      },
+      { new: true }
+    );
+
+    if (!ad) return res.status(404).json({ msg: "Image/GIF not found" });
+
+    res.status(200).json({ msg: "Deleted successfully", ad });
+  } catch (error) {
+    console.error("Delete error:", error);
+    res.status(500).json({ msg: "Server error", error: error.message });
+  }
+};
+
+module.exports = { uploadAdImage,getImageAds, getGifAds , deleteAdItem };
+
