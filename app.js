@@ -16,6 +16,7 @@ const partnerRoutes = require('./routes/partnerRoutes');
 const contactInfoRoutes = require('./routes/contactInfoRoutes');
 const eventGalleryRoutes = require('./routes/eventGalleryRoutes');
 const paymentRoutes =  require('./routes/paymentRoutes.js');
+const sosRoutes = require("./routes/sosRoutes");
 
 dotenv.config();
 
@@ -79,6 +80,7 @@ app.use('/api/partners', partnerRoutes);
 app.use('/api/contact-info', contactInfoRoutes);
 app.use('/api/event-gallery', eventGalleryRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use("/api/sos", sosRoutes);
 
 
 
